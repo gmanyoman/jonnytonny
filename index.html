@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#fdf4e3">
-<title>주니토니 뮤지컬 동화</title>
+<title>또리의 뮤지컬 동화</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&family=Black+Han+Sans&display=swap" rel="stylesheet">
@@ -24,7 +24,6 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
   html, body { height: 100%; }
 
   body {
@@ -40,7 +39,6 @@
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
 
-  /* Floating sparkles */
   body::before, body::after {
     content: '';
     position: fixed;
@@ -70,23 +68,19 @@
   }
 
   .container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 36px 20px 60px;
+    padding: 32px 18px 60px;
     position: relative;
     z-index: 1;
   }
 
-  header {
-    text-align: center;
-    margin-bottom: 36px;
-    position: relative;
-  }
+  header { text-align: center; margin-bottom: 22px; }
 
   .crown {
-    font-size: 36px;
+    font-size: 34px;
     display: inline-block;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     animation: wiggle 3s ease-in-out infinite;
   }
   @keyframes wiggle {
@@ -96,7 +90,7 @@
 
   h1 {
     font-family: 'Black Han Sans', sans-serif;
-    font-size: clamp(34px, 7vw, 54px);
+    font-size: clamp(34px, 7vw, 56px);
     line-height: 1.1;
     letter-spacing: -0.5px;
     background: linear-gradient(135deg, var(--pink) 0%, var(--lilac) 50%, var(--gold) 100%);
@@ -113,7 +107,6 @@
     margin-top: 6px;
     letter-spacing: 0.5px;
   }
-
   .subtitle::before, .subtitle::after {
     content: '✦';
     color: var(--gold);
@@ -121,14 +114,56 @@
     opacity: 0.7;
   }
 
+  /* Search */
+  .search-wrap {
+    max-width: 460px;
+    margin: 22px auto 28px;
+    position: relative;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: var(--ink-soft);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  #search {
+    width: 100%;
+    height: 50px;
+    padding: 0 22px 0 50px;
+    border: 2px solid rgba(232, 161, 58, 0.25);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--ink);
+    font-family: 'Gowun Dodum', sans-serif;
+    font-size: 16px;
+    box-shadow: var(--shadow);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  #search::placeholder { color: var(--ink-soft); opacity: 0.55; }
+  #search:focus {
+    border-color: var(--pink);
+    box-shadow: 0 0 0 4px rgba(240, 98, 146, 0.15), var(--shadow);
+  }
+
+  /* Grid */
   .grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    gap: 14px;
   }
-
-  @media (min-width: 720px) {
-    .grid { grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  @media (min-width: 640px) {
+    .grid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  }
+  @media (min-width: 960px) {
+    .grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
   }
 
   .card {
@@ -136,29 +171,27 @@
     text-decoration: none;
     color: inherit;
     background: var(--card);
-    border-radius: 22px;
+    border-radius: 20px;
     overflow: hidden;
     box-shadow: var(--shadow);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     position: relative;
     border: 2px solid rgba(232, 161, 58, 0.15);
-    animation: rise 0.6s ease backwards;
+    animation: rise 0.5s ease backwards;
   }
-
   @keyframes rise {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
-  .card:nth-child(1) { animation-delay: 0.05s; }
-  .card:nth-child(2) { animation-delay: 0.10s; }
-  .card:nth-child(3) { animation-delay: 0.15s; }
-  .card:nth-child(4) { animation-delay: 0.20s; }
-  .card:nth-child(5) { animation-delay: 0.25s; }
-  .card:nth-child(6) { animation-delay: 0.30s; }
-  .card:nth-child(7) { animation-delay: 0.35s; }
-  .card:nth-child(8) { animation-delay: 0.40s; }
-  .card:nth-child(9) { animation-delay: 0.45s; }
+  .card:nth-child(1) { animation-delay: 0.04s; }
+  .card:nth-child(2) { animation-delay: 0.08s; }
+  .card:nth-child(3) { animation-delay: 0.12s; }
+  .card:nth-child(4) { animation-delay: 0.16s; }
+  .card:nth-child(5) { animation-delay: 0.20s; }
+  .card:nth-child(6) { animation-delay: 0.24s; }
+  .card:nth-child(7) { animation-delay: 0.28s; }
+  .card:nth-child(8) { animation-delay: 0.32s; }
+  .card:nth-child(9) { animation-delay: 0.36s; }
 
   .card:hover, .card:active {
     transform: translateY(-4px);
@@ -171,7 +204,6 @@
     overflow: hidden;
     background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
   }
-
   .thumb img {
     width: 100%;
     height: 100%;
@@ -179,7 +211,6 @@
     display: block;
     transition: transform 0.4s ease;
   }
-
   .card:hover .thumb img { transform: scale(1.06); }
 
   .play {
@@ -191,35 +222,39 @@
     pointer-events: none;
   }
   .play svg {
-    width: 54px; height: 54px;
+    width: 46px; height: 46px;
     filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
     opacity: 0.95;
     transition: transform 0.25s ease;
   }
   .card:hover .play svg { transform: scale(1.15); }
+  @media (min-width: 640px) {
+    .play svg { width: 54px; height: 54px; }
+  }
 
   .info {
-    padding: 14px 14px 16px;
+    padding: 14px 10px 18px;
     text-align: center;
   }
-
   .title {
     font-family: 'Jua', sans-serif;
-    font-size: clamp(16px, 4vw, 19px);
+    font-size: clamp(19px, 5vw, 24px);
     color: var(--ink);
-    letter-spacing: -0.2px;
+    letter-spacing: -0.3px;
+    line-height: 1.25;
   }
 
-  .badge {
-    display: inline-block;
-    margin-top: 4px;
-    font-size: 11px;
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
     color: var(--ink-soft);
-    background: rgba(232, 161, 58, 0.13);
-    padding: 2px 9px;
-    border-radius: 999px;
-    font-family: 'Gowun Dodum', sans-serif;
+    font-family: 'Jua', sans-serif;
+    font-size: 17px;
+    display: none;
   }
+  .empty.show { display: block; }
+  .empty .face { font-size: 38px; display: block; margin-bottom: 10px; }
 
   footer {
     text-align: center;
@@ -230,21 +265,29 @@
     opacity: 0.7;
   }
   footer .heart { color: var(--pink); }
-
-  @media (min-width: 720px) {
-    .play svg { width: 64px; height: 64px; }
-  }
 </style>
 </head>
 <body>
   <div class="container">
     <header>
       <div class="crown">👑</div>
-      <h1>주니토니 뮤지컬 동화</h1>
-      <p class="subtitle">노래로 만나는 우리들의 이야기</p>
+      <h1>또리의 뮤지컬 동화</h1>
+      <p class="subtitle">또미제리가 함께 만드는 동화 이야기</p>
     </header>
 
+    <div class="search-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input id="search" type="text" placeholder="동화 제목으로 찾기..." autocomplete="off" spellcheck="false" enterkeyhint="search">
+    </div>
+
     <main class="grid" id="grid"></main>
+    <div class="empty" id="empty">
+      <span class="face">🔍</span>
+      찾으시는 동화가 없어요
+    </div>
 
     <footer>
       Made with <span class="heart">♥</span> for our little stars
@@ -274,7 +317,7 @@
 
   const grid = document.getElementById('grid');
   grid.innerHTML = tales.map(t => `
-    <a class="card" href="https://www.youtube.com/watch?v=${t.id}" target="_blank" rel="noopener noreferrer" aria-label="${t.title} 뮤지컬 보기">
+    <a class="card" data-title="${t.title}" href="https://www.youtube.com/watch?v=${t.id}" target="_blank" rel="noopener noreferrer" aria-label="${t.title} 보기">
       <div class="thumb">
         <img
           src="https://i.ytimg.com/vi/${t.id}/maxresdefault.jpg"
@@ -285,10 +328,26 @@
       </div>
       <div class="info">
         <div class="title">${t.title}</div>
-        <div class="badge">뮤지컬 동화</div>
       </div>
     </a>
   `).join('');
+
+  // Live search filter
+  const searchInput = document.getElementById('search');
+  const emptyState = document.getElementById('empty');
+  const cards = document.querySelectorAll('.card');
+
+  searchInput.addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase().replace(/\s+/g, '').trim();
+    let visible = 0;
+    cards.forEach(card => {
+      const t = card.dataset.title.toLowerCase().replace(/\s+/g, '');
+      const match = q === '' || t.includes(q);
+      card.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    emptyState.classList.toggle('show', visible === 0);
+  });
 </script>
 </body>
 </html>
