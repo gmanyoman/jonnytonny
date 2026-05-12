@@ -36,7 +36,7 @@
     background-attachment: fixed;
     min-height: 100vh;
     overflow-x: hidden;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
   }
 
   body::before, body::after {
@@ -70,13 +70,12 @@
   .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 32px 18px 60px;
+    padding: 32px 18px 140px; /* bottom space for mini-player */
     position: relative;
     z-index: 1;
   }
 
   header { text-align: center; margin-bottom: 22px; }
-
   .crown {
     font-size: 34px;
     display: inline-block;
@@ -120,7 +119,7 @@
     margin: 22px auto 28px;
     position: relative;
   }
-  .search-wrap svg {
+  .search-wrap .ic {
     position: absolute;
     left: 18px;
     top: 50%;
@@ -174,10 +173,11 @@
     border-radius: 20px;
     overflow: hidden;
     box-shadow: var(--shadow);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     position: relative;
     border: 2px solid rgba(232, 161, 58, 0.15);
     animation: rise 0.5s ease backwards;
+    cursor: pointer;
   }
   @keyframes rise {
     from { opacity: 0; transform: translateY(16px); }
@@ -196,6 +196,14 @@
   .card:hover, .card:active {
     transform: translateY(-4px);
     box-shadow: var(--shadow-hover);
+  }
+
+  .card.playing {
+    border-color: var(--pink);
+    box-shadow: 0 0 0 3px rgba(240, 98, 146, 0.18), var(--shadow-hover);
+  }
+  .card.playing .now-playing {
+    display: flex;
   }
 
   .thumb {
@@ -232,6 +240,43 @@
     .play svg { width: 54px; height: 54px; }
   }
 
+  /* "Now playing" badge on the active card */
+  .now-playing {
+    display: none;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: var(--pink);
+    color: white;
+    font-family: 'Jua', sans-serif;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 8px rgba(240,98,146,0.4);
+  }
+  .now-playing .bars {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 10px;
+  }
+  .now-playing .bars span {
+    display: inline-block;
+    width: 2px;
+    background: white;
+    border-radius: 1px;
+    animation: bar 0.9s ease-in-out infinite;
+  }
+  .now-playing .bars span:nth-child(1) { height: 60%; animation-delay: -0.4s; }
+  .now-playing .bars span:nth-child(2) { height: 100%; animation-delay: -0.2s; }
+  .now-playing .bars span:nth-child(3) { height: 70%; animation-delay: -0.6s; }
+  @keyframes bar {
+    0%, 100% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1); }
+  }
+
   .info {
     padding: 14px 10px 18px;
     text-align: center;
@@ -244,7 +289,6 @@
     line-height: 1.25;
   }
 
-  /* Empty state */
   .empty {
     text-align: center;
     padding: 40px 20px;
@@ -265,6 +309,127 @@
     opacity: 0.7;
   }
   footer .heart { color: var(--pink); }
+
+  /* Hidden YouTube player */
+  #yt-host {
+    position: fixed;
+    bottom: -100px;
+    right: -100px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: -1;
+  }
+
+  /* Mini player */
+  .miniplayer {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-width: 720px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 2px solid rgba(232, 161, 58, 0.25);
+    border-radius: 18px;
+    box-shadow: 0 -2px 20px rgba(90, 50, 100, 0.18), 0 12px 30px rgba(90, 50, 100, 0.18);
+    padding: 10px 12px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+    transform: translateY(140%);
+    transition: transform 0.35s cubic-bezier(.2,.9,.3,1.1);
+  }
+  .miniplayer.show { transform: translateY(0); }
+
+  .mp-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .mp-thumb img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .mp-thumb .spin {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at center, rgba(255,255,255,0.15) 0 4px, transparent 4px),
+      radial-gradient(circle at center, rgba(0,0,0,0.35) 0 50%, transparent 50%);
+    border-radius: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .miniplayer.playing .mp-thumb img {
+    animation: spin 8s linear infinite;
+  }
+  @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+  .mp-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .mp-label {
+    font-family: 'Gowun Dodum', sans-serif;
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.3px;
+  }
+  .mp-title {
+    font-family: 'Jua', sans-serif;
+    font-size: 17px;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    margin-top: 1px;
+  }
+
+  .mp-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .mp-btn {
+    width: 42px;
+    height: 42px;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  .mp-btn:hover { background: rgba(232, 161, 58, 0.13); }
+  .mp-btn:active { transform: scale(0.92); }
+  .mp-btn svg { width: 22px; height: 22px; }
+  .mp-btn.primary {
+    background: linear-gradient(135deg, var(--pink), var(--lilac));
+    color: white;
+    box-shadow: 0 4px 12px rgba(240, 98, 146, 0.4);
+  }
+  .mp-btn.primary:hover { background: linear-gradient(135deg, var(--pink), var(--lilac)); filter: brightness(1.08); }
+  .mp-btn.primary svg { width: 18px; height: 18px; }
+
+  @media (max-width: 380px) {
+    .mp-btn { width: 38px; height: 38px; }
+    .mp-thumb { width: 42px; height: 42px; }
+    .mp-title { font-size: 15px; }
+  }
 </style>
 </head>
 <body>
@@ -276,7 +441,7 @@
     </header>
 
     <div class="search-wrap">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="7"/>
         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
@@ -294,6 +459,32 @@
     </footer>
   </div>
 
+  <!-- Hidden YouTube player (audio only) -->
+  <div id="yt-host"><div id="ytplayer"></div></div>
+
+  <!-- Mini Player UI -->
+  <div class="miniplayer" id="miniplayer" aria-live="polite">
+    <div class="mp-thumb">
+      <img id="mp-thumb-img" alt="" src="">
+    </div>
+    <div class="mp-info">
+      <div class="mp-label">재생 중</div>
+      <div class="mp-title" id="mp-title">—</div>
+    </div>
+    <div class="mp-actions">
+      <button class="mp-btn primary" id="mp-toggle" aria-label="재생/일시정지">
+        <!-- play icon by default -->
+        <svg id="mp-toggle-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button class="mp-btn" id="mp-yt" aria-label="유튜브에서 열기" title="유튜브에서 열기">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.58 7.19a2.51 2.51 0 0 0-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42A2.51 2.51 0 0 0 2.42 7.19 26.07 26.07 0 0 0 2 12a26.07 26.07 0 0 0 .42 4.81 2.51 2.51 0 0 0 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42a2.51 2.51 0 0 0 1.77-1.77A26.07 26.07 0 0 0 22 12a26.07 26.07 0 0 0-.42-4.81zM10 15V9l5.2 3z"/></svg>
+      </button>
+      <button class="mp-btn" id="mp-close" aria-label="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+  </div>
+
 <script>
   const tales = [
     { title: '인어공주',        id: 'h3xiBmUmkcQ' },
@@ -307,7 +498,7 @@
     { title: '미녀와 야수',     id: 'GB-hp7skvHU' },
   ];
 
-  const playIcon = `
+  const playIconBig = `
     <div class="play">
       <svg viewBox="0 0 68 48" xmlns="http://www.w3.org/2000/svg">
         <path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55C3.97 2.33 2.27 4.81 1.48 7.74 .06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="#FF0000"/>
@@ -315,16 +506,24 @@
       </svg>
     </div>`;
 
+  const nowPlayingBadge = `
+    <div class="now-playing">
+      <span class="bars"><span></span><span></span><span></span></span>
+      재생 중
+    </div>`;
+
+  // Build cards
   const grid = document.getElementById('grid');
   grid.innerHTML = tales.map(t => `
-    <a class="card" data-title="${t.title}" href="https://www.youtube.com/watch?v=${t.id}" target="_blank" rel="noopener noreferrer" aria-label="${t.title} 보기">
+    <a class="card" data-title="${t.title}" data-id="${t.id}" href="https://www.youtube.com/watch?v=${t.id}" target="_blank" rel="noopener noreferrer" aria-label="${t.title} 재생">
       <div class="thumb">
         <img
           src="https://i.ytimg.com/vi/${t.id}/maxresdefault.jpg"
           onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${t.id}/hqdefault.jpg';"
           alt="${t.title} 썸네일"
           loading="lazy">
-        ${playIcon}
+        ${playIconBig}
+        ${nowPlayingBadge}
       </div>
       <div class="info">
         <div class="title">${t.title}</div>
@@ -348,6 +547,125 @@
     });
     emptyState.classList.toggle('show', visible === 0);
   });
+
+  /* ---------- YouTube Audio Player ---------- */
+  // Load API
+  (function () {
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+  })();
+
+  let player = null;
+  let playerReady = false;
+  let pendingVideo = null; // {id, title}
+  let currentId = null;
+  let isPlaying = false;
+
+  const mp = document.getElementById('miniplayer');
+  const mpTitle = document.getElementById('mp-title');
+  const mpThumb = document.getElementById('mp-thumb-img');
+  const mpToggle = document.getElementById('mp-toggle');
+  const mpToggleIcon = document.getElementById('mp-toggle-icon');
+  const mpYt = document.getElementById('mp-yt');
+  const mpClose = document.getElementById('mp-close');
+
+  const playIconSvg  = '<path d="M8 5v14l11-7z"/>';
+  const pauseIconSvg = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+
+  window.onYouTubeIframeAPIReady = function () {
+    player = new YT.Player('ytplayer', {
+      height: '180',
+      width: '320',
+      playerVars: { playsinline: 1, rel: 0, modestbranding: 1 },
+      events: {
+        onReady: () => {
+          playerReady = true;
+          if (pendingVideo) {
+            const p = pendingVideo; pendingVideo = null;
+            playVideo(p.id, p.title);
+          }
+        },
+        onStateChange: (e) => {
+          // 1 = playing, 2 = paused, 0 = ended
+          if (e.data === YT.PlayerState.PLAYING) {
+            isPlaying = true;
+            updateUI();
+          } else if (e.data === YT.PlayerState.PAUSED) {
+            isPlaying = false;
+            updateUI();
+          } else if (e.data === YT.PlayerState.ENDED) {
+            isPlaying = false;
+            updateUI();
+          }
+        },
+        onError: () => {
+          alert('이 영상은 페이지에서 재생할 수 없어요. 유튜브에서 열어드릴게요!');
+          if (currentId) window.open('https://www.youtube.com/watch?v=' + currentId, '_blank');
+          closePlayer();
+        }
+      }
+    });
+  };
+
+  function playVideo(id, title) {
+    if (!playerReady || !player || typeof player.loadVideoById !== 'function') {
+      pendingVideo = { id, title };
+      return;
+    }
+    currentId = id;
+    mpTitle.textContent = title;
+    mpThumb.src = 'https://i.ytimg.com/vi/' + id + '/mqdefault.jpg';
+    mpThumb.alt = title + ' 썸네일';
+    mp.classList.add('show');
+    player.loadVideoById(id);
+  }
+
+  function updateUI() {
+    // Toggle icon
+    mpToggleIcon.innerHTML = isPlaying ? pauseIconSvg : playIconSvg;
+    // Spinning thumb
+    mp.classList.toggle('playing', isPlaying);
+    // Card highlight
+    document.querySelectorAll('.card').forEach(c => {
+      c.classList.toggle('playing', c.dataset.id === currentId && isPlaying);
+    });
+  }
+
+  function closePlayer() {
+    if (player && typeof player.stopVideo === 'function') {
+      try { player.stopVideo(); } catch(e) {}
+    }
+    isPlaying = false;
+    currentId = null;
+    mp.classList.remove('show');
+    updateUI();
+  }
+
+  // Card click → in-page play
+  cards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      // Allow modifier-click / middle-click to open YouTube as fallback
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+      e.preventDefault();
+      const id = card.dataset.id;
+      const title = card.dataset.title;
+      playVideo(id, title);
+    });
+  });
+
+  // Mini player controls
+  mpToggle.addEventListener('click', () => {
+    if (!player) return;
+    if (isPlaying) player.pauseVideo();
+    else player.playVideo();
+  });
+
+  mpYt.addEventListener('click', () => {
+    if (currentId) window.open('https://www.youtube.com/watch?v=' + currentId, '_blank');
+  });
+
+  mpClose.addEventListener('click', closePlayer);
 </script>
 </body>
 </html>
