@@ -140,7 +140,7 @@
   #search {
     width: 100%;
     height: 50px;
-    padding: 0 22px 0 50px;
+    padding: 0 44px 0 50px;
     border: 2px solid rgba(232, 161, 58, 0.25);
     border-radius: 999px;
     background: var(--card);
@@ -159,6 +159,29 @@
     box-shadow: 0 0 0 4px rgba(240, 98, 146, 0.15), var(--shadow);
   }
 
+  /* Clear button inside search (shown when there's input) */
+  .clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(106, 84, 112, 0.1);
+    color: var(--ink-soft);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  .clear-btn svg { width: 14px; height: 14px; }
+  .clear-btn:hover { background: rgba(106, 84, 112, 0.2); }
+  .clear-btn:active { transform: translateY(-50%) scale(0.9); }
+  .search-wrap.has-value .clear-btn { display: flex; }
+
   .qp-btn {
     height: 50px;
     padding: 0 18px;
@@ -174,15 +197,23 @@
     flex-shrink: 0;
     letter-spacing: -0.3px;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.15;
   }
   .qp-btn:hover { background: #fff4e0; }
   .qp-btn:active { transform: scale(0.94); }
 
-  /* On narrow screens: keep one row, just make buttons more compact */
+  /* On narrow screens: keep one row, but button text wraps to 2 lines inside */
   @media (max-width: 480px) {
     .qp-btn {
-      padding: 0 10px;
+      white-space: normal;
+      word-break: keep-all;
+      padding: 0 8px;
       font-size: 13px;
+      width: 60px;
     }
   }
 
@@ -358,17 +389,6 @@
     letter-spacing: -0.3px;
     line-height: 1.25;
   }
-  .play-count {
-    display: none;
-    margin-top: 4px;
-    font-family: 'Gowun Dodum', sans-serif;
-    font-size: 12px;
-    color: var(--ink-soft);
-    opacity: 0.7;
-  }
-  .card[data-count]:not([data-count="0"]) .play-count {
-    display: block;
-  }
 
   .empty {
     text-align: center;
@@ -540,12 +560,17 @@
     </header>
 
     <div class="search-row">
-      <div class="search-wrap">
+      <div class="search-wrap" id="search-wrap">
         <svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="7"/>
           <line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input id="search" type="text" placeholder="동화 제목으로 찾기..." autocomplete="off" spellcheck="false" enterkeyhint="search">
+        <input id="search" type="text" placeholder="제목으로 찾기" autocomplete="off" spellcheck="false" enterkeyhint="search">
+        <button class="clear-btn" id="search-clear" type="button" aria-label="검색어 지우기">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 6l12 12M18 6L6 18"/>
+          </svg>
+        </button>
       </div>
       <button class="qp-btn" id="btn-play-all">전체 재생</button>
       <button class="qp-btn" id="btn-shuffle">랜덤 재생</button>
@@ -676,7 +701,6 @@
       </div>
       <div class="info">
         <div class="title">${t.title}</div>
-        <div class="play-count" data-count-for="${t.id}"></div>
       </div>
     </a>
   `).join('');
@@ -694,9 +718,6 @@
       card.style.order = (fav ? -100000 : 0) - c * 100 + idx;
       card.classList.toggle('fav', fav);
       card.dataset.count = c;
-      // Update count display
-      const cd = card.querySelector('.play-count');
-      if (cd) cd.textContent = c > 0 ? '♪ ' + c + '회' : '';
     });
   }
 
@@ -704,9 +725,11 @@
   const searchInput = document.getElementById('search');
   const emptyState = document.getElementById('empty');
   const cards = document.querySelectorAll('.card');
+  const searchWrap = document.getElementById('search-wrap');
+  const searchClear = document.getElementById('search-clear');
 
-  searchInput.addEventListener('input', (e) => {
-    const q = e.target.value.toLowerCase().replace(/\s+/g, '').trim();
+  function applySearchFilter() {
+    const q = searchInput.value.toLowerCase().replace(/\s+/g, '').trim();
     let visible = 0;
     cards.forEach(card => {
       const t = card.dataset.title.toLowerCase().replace(/\s+/g, '');
@@ -715,6 +738,14 @@
       if (match) visible++;
     });
     emptyState.classList.toggle('show', visible === 0);
+    searchWrap.classList.toggle('has-value', searchInput.value.length > 0);
+  }
+
+  searchInput.addEventListener('input', applySearchFilter);
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    applySearchFilter();
+    searchInput.focus();
   });
 
   /* ---------- Favorite button handlers ---------- */
