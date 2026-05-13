@@ -70,7 +70,7 @@
   .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 32px 18px 140px; /* bottom space for mini-player */
+    padding: 32px 18px 150px;
     position: relative;
     z-index: 1;
   }
@@ -113,10 +113,17 @@
     opacity: 0.7;
   }
 
-  /* Search */
-  .search-wrap {
-    max-width: 460px;
+  /* Search row + compact play buttons */
+  .search-row {
+    display: flex;
+    gap: 8px;
+    max-width: 640px;
     margin: 22px auto 28px;
+    align-items: stretch;
+  }
+  .search-wrap {
+    flex: 1;
+    min-width: 0;
     position: relative;
   }
   .search-wrap .ic {
@@ -150,6 +157,33 @@
   #search:focus {
     border-color: var(--pink);
     box-shadow: 0 0 0 4px rgba(240, 98, 146, 0.15), var(--shadow);
+  }
+
+  .qp-btn {
+    height: 50px;
+    padding: 0 18px;
+    border-radius: 999px;
+    font-family: 'Jua', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    background: var(--card);
+    color: var(--ink);
+    border: 2px solid var(--gold);
+    box-shadow: 0 4px 12px rgba(232, 161, 58, 0.18);
+    transition: transform 0.15s ease, background 0.2s ease;
+    flex-shrink: 0;
+    letter-spacing: -0.3px;
+    white-space: nowrap;
+  }
+  .qp-btn:hover { background: #fff4e0; }
+  .qp-btn:active { transform: scale(0.94); }
+
+  /* On narrow screens: keep one row, just make buttons more compact */
+  @media (max-width: 480px) {
+    .qp-btn {
+      padding: 0 10px;
+      font-size: 13px;
+    }
   }
 
   /* Grid */
@@ -202,8 +236,11 @@
     border-color: var(--pink);
     box-shadow: 0 0 0 3px rgba(240, 98, 146, 0.18), var(--shadow-hover);
   }
-  .card.playing .now-playing {
-    display: flex;
+  .card.playing .now-playing { display: flex; }
+
+  .card.fav {
+    border-color: rgba(232, 161, 58, 0.5);
+    background: linear-gradient(180deg, #fffcf2 0%, var(--card) 100%);
   }
 
   .thumb {
@@ -240,7 +277,6 @@
     .play svg { width: 54px; height: 54px; }
   }
 
-  /* "Now playing" badge on the active card */
   .now-playing {
     display: none;
     position: absolute;
@@ -255,6 +291,7 @@
     align-items: center;
     gap: 5px;
     box-shadow: 0 2px 8px rgba(240,98,146,0.4);
+    z-index: 2;
   }
   .now-playing .bars {
     display: inline-flex;
@@ -277,6 +314,39 @@
     50% { transform: scaleY(1); }
   }
 
+  /* Star favorite button - bottom-right of thumb */
+  .fav-btn {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.32);
+    backdrop-filter: blur(4px);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  .fav-btn:hover { background: rgba(0, 0, 0, 0.5); }
+  .fav-btn:active { transform: scale(0.85); }
+  .fav-btn svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
+  }
+  .card.fav .fav-btn {
+    background: var(--gold);
+    color: white;
+    box-shadow: 0 3px 10px rgba(232, 161, 58, 0.5);
+  }
+  .card.fav .fav-btn svg { transform: scale(1.1); }
+
   .info {
     padding: 14px 10px 18px;
     text-align: center;
@@ -287,6 +357,17 @@
     color: var(--ink);
     letter-spacing: -0.3px;
     line-height: 1.25;
+  }
+  .play-count {
+    display: none;
+    margin-top: 4px;
+    font-family: 'Gowun Dodum', sans-serif;
+    font-size: 12px;
+    color: var(--ink-soft);
+    opacity: 0.7;
+  }
+  .card[data-count]:not([data-count="0"]) .play-count {
+    display: block;
   }
 
   .empty {
@@ -335,7 +416,7 @@
     border: 2px solid rgba(232, 161, 58, 0.25);
     border-radius: 18px;
     box-shadow: 0 -2px 20px rgba(90, 50, 100, 0.18), 0 12px 30px rgba(90, 50, 100, 0.18);
-    padding: 10px 12px;
+    padding: 10px 12px 10px 12px;
     padding-bottom: calc(10px + env(safe-area-inset-bottom));
     display: flex;
     align-items: center;
@@ -343,8 +424,25 @@
     z-index: 100;
     transform: translateY(140%);
     transition: transform 0.35s cubic-bezier(.2,.9,.3,1.1);
+    overflow: hidden;
   }
   .miniplayer.show { transform: translateY(0); }
+
+  /* Progress bar at top of mini player */
+  .mp-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(232, 161, 58, 0.15);
+  }
+  .mp-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--pink), var(--lilac), var(--gold));
+    transition: width 0.5s linear;
+  }
 
   .mp-thumb {
     width: 48px;
@@ -353,22 +451,8 @@
     background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
     overflow: hidden;
     flex-shrink: 0;
-    position: relative;
   }
-  .mp-thumb img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-  }
-  .mp-thumb .spin {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at center, rgba(255,255,255,0.15) 0 4px, transparent 4px),
-      radial-gradient(circle at center, rgba(0,0,0,0.35) 0 50%, transparent 50%);
-    border-radius: 12px;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
+  .mp-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .miniplayer.playing .mp-thumb img {
     animation: spin 8s linear infinite;
   }
@@ -383,7 +467,22 @@
     font-size: 11px;
     color: var(--ink-soft);
     letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
+  .mp-label .shuffle-tag {
+    display: none;
+    background: var(--gold);
+    color: white;
+    font-family: 'Jua', sans-serif;
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-size: 10px;
+  }
+  .miniplayer.shuffle .mp-label .shuffle-tag { display: inline-block; }
+  .mp-label .dot { opacity: 0.4; }
+  .mp-time { font-variant-numeric: tabular-nums; }
   .mp-title {
     font-family: 'Jua', sans-serif;
     font-size: 17px;
@@ -440,12 +539,16 @@
       <p class="subtitle">또미제리가 함께 만드는 동화 이야기</p>
     </header>
 
-    <div class="search-wrap">
-      <svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="7"/>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      <input id="search" type="text" placeholder="동화 제목으로 찾기..." autocomplete="off" spellcheck="false" enterkeyhint="search">
+    <div class="search-row">
+      <div class="search-wrap">
+        <svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="search" type="text" placeholder="동화 제목으로 찾기..." autocomplete="off" spellcheck="false" enterkeyhint="search">
+      </div>
+      <button class="qp-btn" id="btn-play-all">전체 재생</button>
+      <button class="qp-btn" id="btn-shuffle">랜덤 재생</button>
     </div>
 
     <main class="grid" id="grid"></main>
@@ -459,21 +562,26 @@
     </footer>
   </div>
 
-  <!-- Hidden YouTube player (audio only) -->
+  <!-- Hidden YouTube player -->
   <div id="yt-host"><div id="ytplayer"></div></div>
 
   <!-- Mini Player UI -->
   <div class="miniplayer" id="miniplayer" aria-live="polite">
+    <div class="mp-progress"><div class="mp-progress-bar" id="mp-progress-bar"></div></div>
     <div class="mp-thumb">
       <img id="mp-thumb-img" alt="" src="">
     </div>
     <div class="mp-info">
-      <div class="mp-label">재생 중</div>
+      <div class="mp-label">
+        <span>재생 중</span>
+        <span class="shuffle-tag">랜덤</span>
+        <span class="dot">·</span>
+        <span class="mp-time" id="mp-time">0:00 / 0:00</span>
+      </div>
       <div class="mp-title" id="mp-title">—</div>
     </div>
     <div class="mp-actions">
       <button class="mp-btn primary" id="mp-toggle" aria-label="재생/일시정지">
-        <!-- play icon by default -->
         <svg id="mp-toggle-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
       </button>
       <button class="mp-btn" id="mp-yt" aria-label="유튜브에서 열기" title="유튜브에서 열기">
@@ -498,6 +606,41 @@
     { title: '미녀와 야수',     id: 'GB-hp7skvHU' },
   ];
 
+  /* ---------- localStorage helpers ---------- */
+  const KEY_FAV = 'tory:favorites';
+  const KEY_COUNT = 'tory:playCounts';
+
+  function getFavorites() {
+    try { return JSON.parse(localStorage.getItem(KEY_FAV) || '[]'); }
+    catch { return []; }
+  }
+  function setFavorites(arr) {
+    try { localStorage.setItem(KEY_FAV, JSON.stringify(arr)); } catch {}
+  }
+  function getPlayCounts() {
+    try { return JSON.parse(localStorage.getItem(KEY_COUNT) || '{}'); }
+    catch { return {}; }
+  }
+  function setPlayCounts(obj) {
+    try { localStorage.setItem(KEY_COUNT, JSON.stringify(obj)); } catch {}
+  }
+  function isFav(id) { return getFavorites().includes(id); }
+  function toggleFav(id) {
+    const favs = getFavorites();
+    const idx = favs.indexOf(id);
+    if (idx >= 0) favs.splice(idx, 1);
+    else favs.push(id);
+    setFavorites(favs);
+    return idx < 0; // returns new state
+  }
+  function bumpCount(id) {
+    const counts = getPlayCounts();
+    counts[id] = (counts[id] || 0) + 1;
+    setPlayCounts(counts);
+    return counts[id];
+  }
+
+  /* ---------- Card markup ---------- */
   const playIconBig = `
     <div class="play">
       <svg viewBox="0 0 68 48" xmlns="http://www.w3.org/2000/svg">
@@ -512,10 +655,13 @@
       재생 중
     </div>`;
 
-  // Build cards
+  const starIcon = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
+
   const grid = document.getElementById('grid');
-  grid.innerHTML = tales.map(t => `
-    <a class="card" data-title="${t.title}" data-id="${t.id}" href="https://www.youtube.com/watch?v=${t.id}" target="_blank" rel="noopener noreferrer" aria-label="${t.title} 재생">
+  grid.innerHTML = tales.map((t, idx) => `
+    <a class="card" data-title="${t.title}" data-id="${t.id}" data-idx="${idx}" data-count="0"
+       href="https://www.youtube.com/watch?v=${t.id}" target="_blank" rel="noopener noreferrer"
+       aria-label="${t.title} 재생">
       <div class="thumb">
         <img
           src="https://i.ytimg.com/vi/${t.id}/maxresdefault.jpg"
@@ -524,14 +670,37 @@
           loading="lazy">
         ${playIconBig}
         ${nowPlayingBadge}
+        <button class="fav-btn" type="button" aria-label="즐겨찾기" data-fav-for="${t.id}">
+          ${starIcon}
+        </button>
       </div>
       <div class="info">
         <div class="title">${t.title}</div>
+        <div class="play-count" data-count-for="${t.id}"></div>
       </div>
     </a>
   `).join('');
 
-  // Live search filter
+  /* ---------- Sort & display state ---------- */
+  function applySortAndCounts() {
+    const favs = getFavorites();
+    const counts = getPlayCounts();
+    document.querySelectorAll('.card').forEach(card => {
+      const id = card.dataset.id;
+      const idx = parseInt(card.dataset.idx, 10) || 0;
+      const c = counts[id] || 0;
+      const fav = favs.includes(id);
+      // Lower order = earlier. Favs get huge boost; high count next; idx is tiebreaker
+      card.style.order = (fav ? -100000 : 0) - c * 100 + idx;
+      card.classList.toggle('fav', fav);
+      card.dataset.count = c;
+      // Update count display
+      const cd = card.querySelector('.play-count');
+      if (cd) cd.textContent = c > 0 ? '♪ ' + c + '회' : '';
+    });
+  }
+
+  /* ---------- Live search filter ---------- */
   const searchInput = document.getElementById('search');
   const emptyState = document.getElementById('empty');
   const cards = document.querySelectorAll('.card');
@@ -548,8 +717,18 @@
     emptyState.classList.toggle('show', visible === 0);
   });
 
+  /* ---------- Favorite button handlers ---------- */
+  document.querySelectorAll('.fav-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = btn.dataset.favFor;
+      toggleFav(id);
+      applySortAndCounts();
+    });
+  });
+
   /* ---------- YouTube Audio Player ---------- */
-  // Load API
   (function () {
     const tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
@@ -558,9 +737,21 @@
 
   let player = null;
   let playerReady = false;
-  let pendingVideo = null; // {id, title}
+  let pendingVideo = null;
   let currentId = null;
   let isPlaying = false;
+  let countedForCurrentLoad = false;
+
+  // Queue
+  let queue = [];
+  let queueIndex = -1;
+  let isShuffleMode = false;
+
+  // Progress
+  let progressTimer = null;
+
+  // Wake lock
+  let wakeLock = null;
 
   const mp = document.getElementById('miniplayer');
   const mpTitle = document.getElementById('mp-title');
@@ -569,9 +760,67 @@
   const mpToggleIcon = document.getElementById('mp-toggle-icon');
   const mpYt = document.getElementById('mp-yt');
   const mpClose = document.getElementById('mp-close');
+  const mpProgressBar = document.getElementById('mp-progress-bar');
+  const mpTime = document.getElementById('mp-time');
 
   const playIconSvg  = '<path d="M8 5v14l11-7z"/>';
   const pauseIconSvg = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+
+  function shuffled(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function formatTime(sec) {
+    if (!isFinite(sec) || sec < 0) sec = 0;
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return m + ':' + String(s).padStart(2, '0');
+  }
+
+  function startProgress() {
+    stopProgress();
+    progressTimer = setInterval(() => {
+      if (!player || typeof player.getCurrentTime !== 'function') return;
+      try {
+        const cur = player.getCurrentTime();
+        const dur = player.getDuration();
+        if (dur > 0) {
+          mpProgressBar.style.width = ((cur / dur) * 100) + '%';
+          mpTime.textContent = formatTime(cur) + ' / ' + formatTime(dur);
+        }
+      } catch (e) {}
+    }, 500);
+  }
+  function stopProgress() {
+    if (progressTimer) { clearInterval(progressTimer); progressTimer = null; }
+  }
+
+  /* ---- Wake Lock ---- */
+  async function requestWakeLock() {
+    if (!('wakeLock' in navigator)) return;
+    try {
+      if (wakeLock) return;
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    } catch (e) { /* silently ignore */ }
+  }
+  function releaseWakeLock() {
+    if (wakeLock) {
+      try { wakeLock.release(); } catch (e) {}
+      wakeLock = null;
+    }
+  }
+  // Re-acquire on tab visible if still playing
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && isPlaying) {
+      requestWakeLock();
+    }
+  });
 
   window.onYouTubeIframeAPIReady = function () {
     player = new YT.Player('ytplayer', {
@@ -587,46 +836,100 @@
           }
         },
         onStateChange: (e) => {
-          // 1 = playing, 2 = paused, 0 = ended
           if (e.data === YT.PlayerState.PLAYING) {
             isPlaying = true;
+            // Count this play (once per load)
+            if (!countedForCurrentLoad && currentId) {
+              bumpCount(currentId);
+              countedForCurrentLoad = true;
+              applySortAndCounts();
+            }
+            startProgress();
+            requestWakeLock();
             updateUI();
           } else if (e.data === YT.PlayerState.PAUSED) {
             isPlaying = false;
+            stopProgress();
+            releaseWakeLock();
             updateUI();
           } else if (e.data === YT.PlayerState.ENDED) {
             isPlaying = false;
+            stopProgress();
+            releaseWakeLock();
             updateUI();
+            advanceQueue();
           }
         },
         onError: () => {
           alert('이 영상은 페이지에서 재생할 수 없어요. 유튜브에서 열어드릴게요!');
           if (currentId) window.open('https://www.youtube.com/watch?v=' + currentId, '_blank');
-          closePlayer();
+          advanceQueue();
         }
       }
     });
   };
 
   function playVideo(id, title) {
+    countedForCurrentLoad = false;
     if (!playerReady || !player || typeof player.loadVideoById !== 'function') {
       pendingVideo = { id, title };
+      currentId = id;
+      mpTitle.textContent = title;
+      mpThumb.src = 'https://i.ytimg.com/vi/' + id + '/mqdefault.jpg';
+      mpThumb.alt = title + ' 썸네일';
+      mpProgressBar.style.width = '0%';
+      mpTime.textContent = '0:00 / 0:00';
+      mp.classList.add('show');
       return;
     }
     currentId = id;
     mpTitle.textContent = title;
     mpThumb.src = 'https://i.ytimg.com/vi/' + id + '/mqdefault.jpg';
     mpThumb.alt = title + ' 썸네일';
+    mpProgressBar.style.width = '0%';
+    mpTime.textContent = '0:00 / 0:00';
     mp.classList.add('show');
+    mp.classList.toggle('shuffle', isShuffleMode);
     player.loadVideoById(id);
   }
 
+  function playCurrent() {
+    if (queueIndex >= 0 && queueIndex < queue.length) {
+      const t = queue[queueIndex];
+      playVideo(t.id, t.title);
+    }
+  }
+  function advanceQueue() {
+    if (queueIndex >= 0 && queueIndex < queue.length - 1) {
+      queueIndex++;
+      playCurrent();
+    } else {
+      closePlayer();
+    }
+  }
+  function playAll() {
+    isShuffleMode = false;
+    queue = tales.slice();
+    queueIndex = 0;
+    playCurrent();
+  }
+  function playShuffle() {
+    isShuffleMode = true;
+    queue = shuffled(tales);
+    queueIndex = 0;
+    playCurrent();
+  }
+  function playFromCard(id) {
+    isShuffleMode = false;
+    queue = tales.slice();
+    queueIndex = tales.findIndex(t => t.id === id);
+    if (queueIndex < 0) queueIndex = 0;
+    playCurrent();
+  }
+
   function updateUI() {
-    // Toggle icon
     mpToggleIcon.innerHTML = isPlaying ? pauseIconSvg : playIconSvg;
-    // Spinning thumb
     mp.classList.toggle('playing', isPlaying);
-    // Card highlight
     document.querySelectorAll('.card').forEach(c => {
       c.classList.toggle('playing', c.dataset.id === currentId && isPlaying);
     });
@@ -638,34 +941,43 @@
     }
     isPlaying = false;
     currentId = null;
-    mp.classList.remove('show');
+    queue = [];
+    queueIndex = -1;
+    isShuffleMode = false;
+    stopProgress();
+    releaseWakeLock();
+    mpProgressBar.style.width = '0%';
+    mpTime.textContent = '0:00 / 0:00';
+    mp.classList.remove('show', 'playing', 'shuffle');
     updateUI();
   }
 
-  // Card click → in-page play
+  /* ---------- Wire it all up ---------- */
+  document.getElementById('btn-play-all').addEventListener('click', playAll);
+  document.getElementById('btn-shuffle').addEventListener('click', playShuffle);
+
   cards.forEach(card => {
     card.addEventListener('click', (e) => {
-      // Allow modifier-click / middle-click to open YouTube as fallback
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+      // Ignore clicks on the favorite button (handled separately)
+      if (e.target.closest('.fav-btn')) return;
       e.preventDefault();
-      const id = card.dataset.id;
-      const title = card.dataset.title;
-      playVideo(id, title);
+      playFromCard(card.dataset.id);
     });
   });
 
-  // Mini player controls
   mpToggle.addEventListener('click', () => {
     if (!player) return;
     if (isPlaying) player.pauseVideo();
     else player.playVideo();
   });
-
   mpYt.addEventListener('click', () => {
     if (currentId) window.open('https://www.youtube.com/watch?v=' + currentId, '_blank');
   });
-
   mpClose.addEventListener('click', closePlayer);
+
+  // Initial sort/render based on saved data
+  applySortAndCounts();
 </script>
 </body>
 </html>
