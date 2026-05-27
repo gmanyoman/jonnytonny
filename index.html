@@ -451,6 +451,34 @@
   }
   footer .heart { color: var(--pink); }
 
+  /* Section divider for the "watch on YouTube" area */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 50px 0 6px;
+  }
+  .section-divider::before, .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(232, 161, 58, 0.35), transparent);
+  }
+  .section-divider span {
+    font-family: 'Jua', sans-serif;
+    font-size: clamp(17px, 4.5vw, 21px);
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .section-note {
+    text-align: center;
+    font-family: 'Gowun Dodum', sans-serif;
+    font-size: 12px;
+    color: var(--ink-soft);
+    opacity: 0.7;
+    margin-bottom: 22px;
+  }
+
   /* Hidden YouTube player */
   #yt-host {
     position: fixed;
@@ -614,6 +642,12 @@
       찾으시는 동화가 없어요
     </div>
 
+    <div class="section-divider">
+      <span>📺 유튜브에서 보기</span>
+    </div>
+    <p class="section-note">누르면 유튜브 앱/사이트가 열려요</p>
+    <main class="grid" id="yt-grid"></main>
+
     <footer>
       Made with <span class="heart">♥</span> for our little stars
     </footer>
@@ -761,12 +795,36 @@
     </a>
   `).join('');
 
+  /* ---------- YouTube-only section (clicking opens YouTube) ---------- */
+  const ytVideos = [
+    { title: '장수풍뎅이 VS 사슴벌레', id: 'kKaD0Gl8H4s' },
+    { title: '인어공주 루시', id: 'q0wchgF8r_g' },
+  ];
+
+  const ytGrid = document.getElementById('yt-grid');
+  ytGrid.innerHTML = ytVideos.map(v => `
+    <a class="card yt-card" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener noreferrer"
+       aria-label="${v.title} 유튜브에서 보기">
+      <div class="thumb">
+        <img
+          src="https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg"
+          onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${v.id}/hqdefault.jpg';"
+          alt="${v.title} 썸네일"
+          loading="lazy">
+        ${playIconBig}
+      </div>
+      <div class="info">
+        <div class="title">${v.title}</div>
+      </div>
+    </a>
+  `).join('');
+
   /* ---------- Sort & display state ---------- */
   function applySortAndCounts() {
     const favs = getFavorites();
     const counts = getPlayCounts();
     const checked = getChecked();
-    document.querySelectorAll('.card').forEach(card => {
+    document.querySelectorAll('#grid .card').forEach(card => {
       const id = card.dataset.id;
       const idx = parseInt(card.dataset.idx, 10) || 0;
       const c = counts[id] || 0;
@@ -782,7 +840,7 @@
   /* ---------- Live search filter ---------- */
   const searchInput = document.getElementById('search');
   const emptyState = document.getElementById('empty');
-  const cards = document.querySelectorAll('.card');
+  const cards = document.querySelectorAll('#grid .card');
   const searchWrap = document.getElementById('search-wrap');
   const searchClear = document.getElementById('search-clear');
 
@@ -1035,7 +1093,7 @@
   function updateUI() {
     mpToggleIcon.innerHTML = isPlaying ? pauseIconSvg : playIconSvg;
     mp.classList.toggle('playing', isPlaying);
-    document.querySelectorAll('.card').forEach(c => {
+    document.querySelectorAll('#grid .card').forEach(c => {
       c.classList.toggle('playing', c.dataset.id === currentId && isPlaying);
     });
   }
