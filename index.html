@@ -205,6 +205,13 @@
   }
   .qp-btn:hover { background: #fff4e0; }
   .qp-btn:active { transform: scale(0.94); }
+  .qp-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+    border-color: rgba(232, 161, 58, 0.4);
+  }
+  .qp-btn:disabled:hover { background: var(--card); }
+  .qp-btn:disabled:active { transform: none; }
 
   /* On narrow screens: keep one row, but button text wraps to 2 lines inside */
   @media (max-width: 480px) {
@@ -259,6 +266,8 @@
   .card:nth-child(9) { animation-delay: 0.36s; }
   .card:nth-child(10) { animation-delay: 0.40s; }
   .card:nth-child(11) { animation-delay: 0.44s; }
+  .card:nth-child(12) { animation-delay: 0.48s; }
+  .card:nth-child(13) { animation-delay: 0.52s; }
 
   .card:hover, .card:active {
     transform: translateY(-4px);
@@ -380,6 +389,34 @@
   }
   .card.fav .fav-btn svg { transform: scale(1.1); }
 
+  /* Checkbox button - top-right of thumb (for repeat-play selection) */
+  .check-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 32px;
+    height: 32px;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    border-radius: 9px;
+    background: rgba(0, 0, 0, 0.32);
+    backdrop-filter: blur(4px);
+    color: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    transition: background 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+  }
+  .check-btn svg { width: 17px; height: 17px; }
+  .check-btn:active { transform: scale(0.85); }
+  .card.checked .check-btn {
+    background: var(--lilac);
+    border-color: var(--lilac);
+    color: white;
+    box-shadow: 0 3px 10px rgba(156, 126, 209, 0.5);
+  }
+
   .info {
     padding: 14px 10px 18px;
     text-align: center;
@@ -493,16 +530,6 @@
     align-items: center;
     gap: 6px;
   }
-  .mp-label .shuffle-tag {
-    display: none;
-    background: var(--gold);
-    color: white;
-    font-family: 'Jua', sans-serif;
-    padding: 1px 6px;
-    border-radius: 6px;
-    font-size: 10px;
-  }
-  .miniplayer.shuffle .mp-label .shuffle-tag { display: inline-block; }
   .mp-label .dot { opacity: 0.4; }
   .mp-time { font-variant-numeric: tabular-nums; }
   .mp-title {
@@ -519,12 +546,12 @@
   .mp-actions {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
     flex-shrink: 0;
   }
   .mp-btn {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     border: none;
     background: transparent;
     color: var(--ink);
@@ -533,11 +560,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s ease, transform 0.15s ease;
+    transition: background 0.2s ease, transform 0.15s ease, color 0.2s ease;
+    position: relative;
   }
   .mp-btn:hover { background: rgba(232, 161, 58, 0.13); }
   .mp-btn:active { transform: scale(0.92); }
-  .mp-btn svg { width: 22px; height: 22px; }
+  .mp-btn svg { width: 21px; height: 21px; }
   .mp-btn.primary {
     background: linear-gradient(135deg, var(--pink), var(--lilac));
     color: white;
@@ -547,8 +575,9 @@
   .mp-btn.primary svg { width: 18px; height: 18px; }
 
   @media (max-width: 380px) {
-    .mp-btn { width: 38px; height: 38px; }
-    .mp-thumb { width: 42px; height: 42px; }
+    .mp-btn { width: 36px; height: 36px; }
+    .mp-btn svg { width: 19px; height: 19px; }
+    .mp-thumb { width: 40px; height: 40px; }
     .mp-title { font-size: 15px; }
   }
 </style>
@@ -575,7 +604,7 @@
         </button>
       </div>
       <button class="qp-btn" id="btn-play-all">전체 재생</button>
-      <button class="qp-btn" id="btn-shuffle">랜덤 재생</button>
+      <button class="qp-btn" id="btn-repeat" disabled>반복 재생</button>
     </div>
 
     <main class="grid" id="grid"></main>
@@ -601,7 +630,6 @@
     <div class="mp-info">
       <div class="mp-label">
         <span>재생 중</span>
-        <span class="shuffle-tag">랜덤</span>
         <span class="dot">·</span>
         <span class="mp-time" id="mp-time">0:00 / 0:00</span>
       </div>
@@ -633,11 +661,14 @@
     { title: '미녀와 야수',     id: 'GB-hp7skvHU' },
     { title: '프린세스 동요 모음', id: 'dgGXIp21-Ts' },
     { title: '프린세스 동화 모음집', id: 'xrrKSE2CtR0' },
+    { title: '주니토니 hello', id: 'eib66oZOILo' },
+    { title: '주니토니 good-bye', id: 'kBSrSwlMAqE' },
   ];
 
   /* ---------- localStorage helpers ---------- */
   const KEY_FAV = 'tory:favorites';
   const KEY_COUNT = 'tory:playCounts';
+  const KEY_CHECKED = 'tory:checked';
 
   function getFavorites() {
     try { return JSON.parse(localStorage.getItem(KEY_FAV) || '[]'); }
@@ -652,6 +683,21 @@
   }
   function setPlayCounts(obj) {
     try { localStorage.setItem(KEY_COUNT, JSON.stringify(obj)); } catch {}
+  }
+  function getChecked() {
+    try { return JSON.parse(localStorage.getItem(KEY_CHECKED) || '[]'); }
+    catch { return []; }
+  }
+  function setChecked(arr) {
+    try { localStorage.setItem(KEY_CHECKED, JSON.stringify(arr)); } catch {}
+  }
+  function toggleChecked(id) {
+    const arr = getChecked();
+    const idx = arr.indexOf(id);
+    if (idx >= 0) arr.splice(idx, 1);
+    else arr.push(id);
+    setChecked(arr);
+    return idx < 0;
   }
   function isFav(id) { return getFavorites().includes(id); }
   function toggleFav(id) {
@@ -686,6 +732,8 @@
 
   const starIcon = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
 
+  const checkIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
   const grid = document.getElementById('grid');
   grid.innerHTML = tales.map((t, idx) => `
     <a class="card" data-title="${t.title}" data-id="${t.id}" data-idx="${idx}" data-count="0"
@@ -699,6 +747,9 @@
           loading="lazy">
         ${playIconBig}
         ${nowPlayingBadge}
+        <button class="check-btn" type="button" aria-label="반복 재생 목록에 추가" data-check-for="${t.id}">
+          ${checkIcon}
+        </button>
         <button class="fav-btn" type="button" aria-label="즐겨찾기" data-fav-for="${t.id}">
           ${starIcon}
         </button>
@@ -713,6 +764,7 @@
   function applySortAndCounts() {
     const favs = getFavorites();
     const counts = getPlayCounts();
+    const checked = getChecked();
     document.querySelectorAll('.card').forEach(card => {
       const id = card.dataset.id;
       const idx = parseInt(card.dataset.idx, 10) || 0;
@@ -721,6 +773,7 @@
       // Lower order = earlier. Favs get huge boost; high count next; idx is tiebreaker
       card.style.order = (fav ? -100000 : 0) - c * 100 + idx;
       card.classList.toggle('fav', fav);
+      card.classList.toggle('checked', checked.includes(id));
       card.dataset.count = c;
     });
   }
@@ -763,6 +816,24 @@
     });
   });
 
+  /* ---------- Checkbox handlers (repeat-play selection) ---------- */
+  const btnRepeat = document.getElementById('btn-repeat');
+  function updateRepeatBtnState() {
+    const n = getChecked().length;
+    btnRepeat.disabled = n === 0;
+    btnRepeat.textContent = n > 0 ? '반복 재생 (' + n + ')' : '반복 재생';
+  }
+  document.querySelectorAll('.check-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = btn.dataset.checkFor;
+      toggleChecked(id);
+      applySortAndCounts();
+      updateRepeatBtnState();
+    });
+  });
+
   /* ---------- YouTube Audio Player ---------- */
   (function () {
     const tag = document.createElement('script');
@@ -780,7 +851,7 @@
   // Queue
   let queue = [];
   let queueIndex = -1;
-  let isShuffleMode = false;
+  let loopQueue = false; // when true, queue loops forever (used by 반복 재생)
 
   // Progress
   let progressTimer = null;
@@ -800,15 +871,6 @@
 
   const playIconSvg  = '<path d="M8 5v14l11-7z"/>';
   const pauseIconSvg = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
-
-  function shuffled(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
 
   function formatTime(sec) {
     if (!isFinite(sec) || sec < 0) sec = 0;
@@ -890,8 +952,8 @@
           } else if (e.data === YT.PlayerState.ENDED) {
             isPlaying = false;
             stopProgress();
-            releaseWakeLock();
             updateUI();
+            releaseWakeLock();
             advanceQueue();
           }
         },
@@ -924,7 +986,6 @@
     mpProgressBar.style.width = '0%';
     mpTime.textContent = '0:00 / 0:00';
     mp.classList.add('show');
-    mp.classList.toggle('shuffle', isShuffleMode);
     player.loadVideoById(id);
   }
 
@@ -938,24 +999,32 @@
     if (queueIndex >= 0 && queueIndex < queue.length - 1) {
       queueIndex++;
       playCurrent();
+    } else if (loopQueue && queue.length > 0) {
+      // Loop back to the beginning of the queue
+      queueIndex = 0;
+      playCurrent();
     } else {
       closePlayer();
     }
   }
   function playAll() {
-    isShuffleMode = false;
+    loopQueue = false;
     queue = tales.slice();
     queueIndex = 0;
     playCurrent();
   }
-  function playShuffle() {
-    isShuffleMode = true;
-    queue = shuffled(tales);
+  function playRepeat() {
+    // Play only the checked songs, looping forever (in display/tales order)
+    const checked = getChecked();
+    const selected = tales.filter(t => checked.includes(t.id));
+    if (selected.length === 0) return;
+    loopQueue = true;
+    queue = selected;
     queueIndex = 0;
     playCurrent();
   }
   function playFromCard(id) {
-    isShuffleMode = false;
+    loopQueue = false;
     queue = tales.slice();
     queueIndex = tales.findIndex(t => t.id === id);
     if (queueIndex < 0) queueIndex = 0;
@@ -978,24 +1047,24 @@
     currentId = null;
     queue = [];
     queueIndex = -1;
-    isShuffleMode = false;
+    loopQueue = false;
     stopProgress();
     releaseWakeLock();
     mpProgressBar.style.width = '0%';
     mpTime.textContent = '0:00 / 0:00';
-    mp.classList.remove('show', 'playing', 'shuffle');
+    mp.classList.remove('show', 'playing');
     updateUI();
   }
 
   /* ---------- Wire it all up ---------- */
   document.getElementById('btn-play-all').addEventListener('click', playAll);
-  document.getElementById('btn-shuffle').addEventListener('click', playShuffle);
+  btnRepeat.addEventListener('click', playRepeat);
 
   cards.forEach(card => {
     card.addEventListener('click', (e) => {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
-      // Ignore clicks on the favorite button (handled separately)
-      if (e.target.closest('.fav-btn')) return;
+      // Ignore clicks on the star or checkbox (handled separately)
+      if (e.target.closest('.fav-btn') || e.target.closest('.check-btn')) return;
       e.preventDefault();
       playFromCard(card.dataset.id);
     });
@@ -1013,6 +1082,7 @@
 
   // Initial sort/render based on saved data
   applySortAndCounts();
+  updateRepeatBtnState();
 </script>
 </body>
 </html>
