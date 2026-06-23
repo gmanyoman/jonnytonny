@@ -483,6 +483,27 @@
     margin-bottom: 22px;
   }
 
+  /* Mini divider inside main grid section (separates classic vs new additions) */
+  .mini-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 30px 0 18px;
+  }
+  .mini-divider::before, .mini-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(240, 98, 146, 0.3), transparent);
+  }
+  .mini-divider span {
+    font-family: 'Jua', sans-serif;
+    font-size: clamp(14px, 3.5vw, 16px);
+    color: var(--pink);
+    white-space: nowrap;
+    opacity: 0.9;
+  }
+
   /* Hidden YouTube player */
   #yt-host {
     position: fixed;
@@ -640,7 +661,13 @@
       <button class="qp-btn" id="btn-repeat" disabled>반복 재생</button>
     </div>
 
-    <main class="grid" id="grid"></main>
+    <main class="grid main-grid" id="grid"></main>
+
+    <div class="mini-divider">
+      <span>✨ 새로 추가된 친구들</span>
+    </div>
+    <main class="grid main-grid" id="grid-new"></main>
+
     <div class="empty" id="empty">
       <span class="face">🔍</span>
       찾으시는 동화가 없어요
@@ -702,10 +729,12 @@
     { title: '프린세스 동화 모음집', id: 'xrrKSE2CtR0' },
     { title: '주니토니 hello', id: 'eib66oZOILo' },
     { title: '주니토니 good-bye', id: 'kBSrSwlMAqE' },
-    { title: '피노키오', id: 'D7yF5qTqj0k' },
-    { title: '잭과 콩나무', id: 'Mzg_bqQqiP4' },
-    { title: '알라딘과 요술램프', id: 'EBEg2D-6B_M' },
-    { title: '토끼와 거북이', id: '-uSiQWzRoUI' },
+    { title: '피노키오', id: 'D7yF5qTqj0k', group: 'new' },
+    { title: '잭과 콩나무', id: 'Mzg_bqQqiP4', group: 'new' },
+    { title: '알라딘과 요술램프', id: 'EBEg2D-6B_M', group: 'new' },
+    { title: '토끼와 거북이', id: '-uSiQWzRoUI', group: 'new' },
+    { title: '이상한 나라의 앨리스', id: 'brgj06CIbJw', group: 'new' },
+    { title: '오즈의 마법사', id: '3b88Xv7RVUk', group: 'new' },
   ];
 
   /* ---------- localStorage helpers ---------- */
@@ -777,8 +806,8 @@
 
   const checkIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
 
-  const grid = document.getElementById('grid');
-  grid.innerHTML = tales.map((t, idx) => `
+  function renderCard(t, idx) {
+    return `
     <a class="card" data-title="${t.title}" data-id="${t.id}" data-idx="${idx}" data-count="0"
        href="https://www.youtube.com/watch?v=${t.id}" target="_blank" rel="noopener noreferrer"
        aria-label="${t.title} 재생">
@@ -801,7 +830,15 @@
         <div class="title">${t.title}</div>
       </div>
     </a>
-  `).join('');
+    `;
+  }
+
+  // Split into two groups for visual separation
+  const classicTales = tales.filter(t => t.group !== 'new');
+  const newTales = tales.filter(t => t.group === 'new');
+
+  document.getElementById('grid').innerHTML = classicTales.map((t, i) => renderCard(t, i)).join('');
+  document.getElementById('grid-new').innerHTML = newTales.map((t, i) => renderCard(t, classicTales.length + i)).join('');
 
   /* ---------- YouTube-only section (clicking opens YouTube) ---------- */
   const ytVideos = [
@@ -833,7 +870,7 @@
     const favs = getFavorites();
     const counts = getPlayCounts();
     const checked = getChecked();
-    document.querySelectorAll('#grid .card').forEach(card => {
+    document.querySelectorAll('.main-grid .card').forEach(card => {
       const id = card.dataset.id;
       const idx = parseInt(card.dataset.idx, 10) || 0;
       const c = counts[id] || 0;
@@ -849,7 +886,7 @@
   /* ---------- Live search filter ---------- */
   const searchInput = document.getElementById('search');
   const emptyState = document.getElementById('empty');
-  const cards = document.querySelectorAll('#grid .card');
+  const cards = document.querySelectorAll('.main-grid .card');
   const searchWrap = document.getElementById('search-wrap');
   const searchClear = document.getElementById('search-clear');
 
@@ -1102,7 +1139,7 @@
   function updateUI() {
     mpToggleIcon.innerHTML = isPlaying ? pauseIconSvg : playIconSvg;
     mp.classList.toggle('playing', isPlaying);
-    document.querySelectorAll('#grid .card').forEach(c => {
+    document.querySelectorAll('.main-grid .card').forEach(c => {
       c.classList.toggle('playing', c.dataset.id === currentId && isPlaying);
     });
   }
