@@ -113,12 +113,25 @@
     opacity: 0.7;
   }
 
+  /* Sticky bar wrapper - sticks search + play buttons to top on scroll */
+  .sticky-bar {
+    position: sticky;
+    top: env(safe-area-inset-top, 0);
+    z-index: 50;
+    margin: 22px -18px 28px;
+    padding: 12px 18px;
+    background: rgba(255, 241, 214, 0.86);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+    border-bottom: 1px solid rgba(232, 161, 58, 0.12);
+  }
+
   /* Search row + compact play buttons */
   .search-row {
     display: flex;
     gap: 8px;
     max-width: 640px;
-    margin: 22px auto 28px;
+    margin: 0 auto;
     align-items: stretch;
   }
   .search-wrap {
@@ -644,21 +657,23 @@
       <p class="subtitle">또미제리가 함께 만드는 동화 이야기</p>
     </header>
 
-    <div class="search-row">
-      <div class="search-wrap" id="search-wrap">
-        <svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="7"/>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input id="search" type="text" placeholder="제목으로 찾기" autocomplete="off" spellcheck="false" enterkeyhint="search">
-        <button class="clear-btn" id="search-clear" type="button" aria-label="검색어 지우기">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 6l12 12M18 6L6 18"/>
+    <div class="sticky-bar">
+      <div class="search-row">
+        <div class="search-wrap" id="search-wrap">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
-        </button>
+          <input id="search" type="text" placeholder="제목으로 찾기" autocomplete="off" spellcheck="false" enterkeyhint="search">
+          <button class="clear-btn" id="search-clear" type="button" aria-label="검색어 지우기">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 6l12 12M18 6L6 18"/>
+            </svg>
+          </button>
+        </div>
+        <button class="qp-btn" id="btn-play-all">전체 재생</button>
+        <button class="qp-btn" id="btn-repeat" disabled>반복 재생</button>
       </div>
-      <button class="qp-btn" id="btn-play-all">전체 재생</button>
-      <button class="qp-btn" id="btn-repeat" disabled>반복 재생</button>
     </div>
 
     <main class="grid main-grid" id="grid"></main>
