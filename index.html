@@ -70,7 +70,7 @@
   .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 32px 18px 150px;
+    padding: 32px 18px 180px;
     position: relative;
     z-index: 1;
   }
@@ -540,13 +540,13 @@
     margin: 0 auto;
     background: var(--card);
     border: 2px solid rgba(232, 161, 58, 0.25);
-    border-radius: 18px;
+    border-radius: 20px;
     box-shadow: 0 -2px 20px rgba(90, 50, 100, 0.18), 0 12px 30px rgba(90, 50, 100, 0.18);
-    padding: 10px 12px 10px 12px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    padding: 14px 14px 14px 16px;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom));
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
     z-index: 100;
     transform: translateY(140%);
     transition: transform 0.35s cubic-bezier(.2,.9,.3,1.1);
@@ -560,7 +560,7 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
+    height: 5px;
     background: rgba(232, 161, 58, 0.15);
   }
   .mp-progress-bar {
@@ -571,9 +571,9 @@
   }
 
   .mp-thumb {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 58px;
+    height: 58px;
+    border-radius: 14px;
     background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
     overflow: hidden;
     flex-shrink: 0;
@@ -590,7 +590,7 @@
   }
   .mp-label {
     font-family: 'Gowun Dodum', sans-serif;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--ink-soft);
     letter-spacing: 0.3px;
     display: flex;
@@ -601,24 +601,24 @@
   .mp-time { font-variant-numeric: tabular-nums; }
   .mp-title {
     font-family: 'Jua', sans-serif;
-    font-size: 17px;
+    font-size: 20px;
     color: var(--ink);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.2;
-    margin-top: 1px;
+    margin-top: 2px;
   }
 
   .mp-actions {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 4px;
     flex-shrink: 0;
   }
   .mp-btn {
-    width: 40px;
-    height: 40px;
+    width: 46px;
+    height: 46px;
     border: none;
     background: transparent;
     color: var(--ink);
@@ -632,20 +632,25 @@
   }
   .mp-btn:hover { background: rgba(232, 161, 58, 0.13); }
   .mp-btn:active { transform: scale(0.92); }
-  .mp-btn svg { width: 21px; height: 21px; }
+  .mp-btn svg { width: 23px; height: 23px; }
   .mp-btn.primary {
+    width: 64px;
+    height: 64px;
     background: linear-gradient(135deg, var(--pink), var(--lilac));
     color: white;
-    box-shadow: 0 4px 12px rgba(240, 98, 146, 0.4);
+    box-shadow: 0 6px 16px rgba(240, 98, 146, 0.45);
   }
   .mp-btn.primary:hover { background: linear-gradient(135deg, var(--pink), var(--lilac)); filter: brightness(1.08); }
-  .mp-btn.primary svg { width: 18px; height: 18px; }
+  .mp-btn.primary svg { width: 28px; height: 28px; }
 
   @media (max-width: 380px) {
-    .mp-btn { width: 36px; height: 36px; }
-    .mp-btn svg { width: 19px; height: 19px; }
-    .mp-thumb { width: 40px; height: 40px; }
-    .mp-title { font-size: 15px; }
+    .miniplayer { gap: 10px; padding: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+    .mp-btn { width: 42px; height: 42px; }
+    .mp-btn svg { width: 21px; height: 21px; }
+    .mp-btn.primary { width: 58px; height: 58px; }
+    .mp-btn.primary svg { width: 25px; height: 25px; }
+    .mp-thumb { width: 50px; height: 50px; }
+    .mp-title { font-size: 17px; }
   }
 </style>
 </head>
@@ -752,6 +757,7 @@
     { title: '오즈의 마법사', id: '3b88Xv7RVUk', group: 'new' },
     { title: '구름빵 노래', id: '9N8y1Cphqg4', group: 'new' },
     { title: '구름빵 동화', id: '3gWh4gaezgs', group: 'new' },
+    { title: '예쁜 동요 60분', id: 'T9yBEq9P6rQ', group: 'new' },
   ];
 
   /* ---------- localStorage helpers ---------- */
