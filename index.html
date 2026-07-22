@@ -468,34 +468,6 @@
   }
   footer .heart { color: var(--pink); }
 
-  /* Section divider for the "watch on YouTube" area */
-  .section-divider {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin: 50px 0 6px;
-  }
-  .section-divider::before, .section-divider::after {
-    content: '';
-    flex: 1;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(232, 161, 58, 0.35), transparent);
-  }
-  .section-divider span {
-    font-family: 'Jua', sans-serif;
-    font-size: clamp(17px, 4.5vw, 21px);
-    color: var(--ink);
-    white-space: nowrap;
-  }
-  .section-note {
-    text-align: center;
-    font-family: 'Gowun Dodum', sans-serif;
-    font-size: 12px;
-    color: var(--ink-soft);
-    opacity: 0.7;
-    margin-bottom: 22px;
-  }
-
   /* Mini divider inside main grid section (separates classic vs new additions) */
   .mini-divider {
     display: flex;
@@ -639,9 +611,41 @@
     background: linear-gradient(135deg, var(--pink), var(--lilac));
     color: white;
     box-shadow: 0 6px 16px rgba(240, 98, 146, 0.45);
+    transition: width 0.3s cubic-bezier(.2,.9,.3,1.1),
+                height 0.3s cubic-bezier(.2,.9,.3,1.1),
+                box-shadow 0.3s ease,
+                background 0.2s ease,
+                transform 0.15s ease;
   }
   .mp-btn.primary:hover { background: linear-gradient(135deg, var(--pink), var(--lilac)); filter: brightness(1.08); }
-  .mp-btn.primary svg { width: 28px; height: 28px; }
+  .mp-btn.primary svg {
+    width: 28px;
+    height: 28px;
+    transition: width 0.3s ease, height 0.3s ease;
+  }
+
+  /* When playing: MUCH bigger pause button with breathing glow effect */
+  .miniplayer.playing .mp-btn.primary {
+    width: 82px;
+    height: 82px;
+    box-shadow: 0 8px 24px rgba(240, 98, 146, 0.55);
+    animation: breathe 2.4s ease-in-out infinite;
+  }
+  .miniplayer.playing .mp-btn.primary svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  @keyframes breathe {
+    0%, 100% {
+      box-shadow: 0 8px 24px rgba(240, 98, 146, 0.55),
+                  0 0 0 0 rgba(240, 98, 146, 0.35);
+    }
+    50% {
+      box-shadow: 0 8px 24px rgba(240, 98, 146, 0.55),
+                  0 0 0 12px rgba(240, 98, 146, 0);
+    }
+  }
 
   @media (max-width: 380px) {
     .miniplayer { gap: 10px; padding: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
@@ -649,6 +653,9 @@
     .mp-btn svg { width: 21px; height: 21px; }
     .mp-btn.primary { width: 58px; height: 58px; }
     .mp-btn.primary svg { width: 25px; height: 25px; }
+    /* Playing state on mobile: still noticeably bigger but proportional */
+    .miniplayer.playing .mp-btn.primary { width: 72px; height: 72px; }
+    .miniplayer.playing .mp-btn.primary svg { width: 32px; height: 32px; }
     .mp-thumb { width: 50px; height: 50px; }
     .mp-title { font-size: 17px; }
   }
@@ -681,23 +688,17 @@
       </div>
     </div>
 
-    <main class="grid main-grid" id="grid"></main>
+    <main class="grid main-grid" id="grid-new"></main>
 
     <div class="mini-divider">
-      <span>✨ 새로 추가된 친구들</span>
+      <span>💫 기존 동화들</span>
     </div>
-    <main class="grid main-grid" id="grid-new"></main>
+    <main class="grid main-grid" id="grid"></main>
 
     <div class="empty" id="empty">
       <span class="face">🔍</span>
       찾으시는 동화가 없어요
     </div>
-
-    <div class="section-divider">
-      <span>📺 유튜브에서 보기</span>
-    </div>
-    <p class="section-note">누르면 유튜브 앱/사이트가 열려요</p>
-    <main class="grid" id="yt-grid"></main>
 
     <footer>
       Made with <span class="heart">♥</span> for our little stars
@@ -758,10 +759,15 @@
     { title: '구름빵 동화', id: '3gWh4gaezgs', group: 'new' },
     { title: '구름빵 노래', id: 'lzvgbmzPqeE', group: 'new' },
     { title: '예쁜 동요 60분', id: 'T9yBEq9P6rQ', group: 'new' },
-    { title: '차에서 듣는 동화 47분', id: 'YFsElSX7xlo', group: 'new' },
     { title: '나무꾼 외 40분', id: 'IeelqDZb6jg', group: 'new' },
     { title: '알라딘 외 40분', id: '31G_gz0EDCU', group: 'new' },
     { title: '어린이동요 30분', id: 'EQejXNZboMc', group: 'new' },
+    { title: '핑크퐁 명작동화 모음', id: 'kjrhzyTeKsY', group: 'new' },
+    { title: '사자와 생쥐', id: 'ImlUQhFlJQ8', group: 'new' },
+    { title: '라푼젤 2', id: 'zBcUZnJQ4Jo', group: 'new' },
+    { title: '토끼와 자라', id: 'eSJh9IYuLFs', group: 'new' },
+    { title: '여우와 두루미', id: 'q7z6e2hNVG8', group: 'new' },
+    { title: '성냥팔이 소녀', id: '_uwCEAWx3bI', group: 'new' },
   ];
 
   /* ---------- localStorage helpers ---------- */
@@ -868,30 +874,6 @@
   document.getElementById('grid-new').innerHTML = newTales.map((t, i) => renderCard(t, classicTales.length + i)).join('');
 
   /* ---------- YouTube-only section (clicking opens YouTube) ---------- */
-  const ytVideos = [
-    { title: '장수풍뎅이 VS 사슴벌레', id: 'kKaD0Gl8H4s' },
-    { title: '인어공주 루시', id: 'q0wchgF8r_g' },
-    { title: '엄빠용', id: 'I-AYt3CNIkQ' },
-  ];
-
-  const ytGrid = document.getElementById('yt-grid');
-  ytGrid.innerHTML = ytVideos.map(v => `
-    <a class="card yt-card" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener noreferrer"
-       aria-label="${v.title} 유튜브에서 보기">
-      <div class="thumb">
-        <img
-          src="https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg"
-          onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${v.id}/hqdefault.jpg';"
-          alt="${v.title} 썸네일"
-          loading="lazy">
-        ${playIconBig}
-      </div>
-      <div class="info">
-        <div class="title">${v.title}</div>
-      </div>
-    </a>
-  `).join('');
-
   /* ---------- Sort & display state ---------- */
   function applySortAndCounts() {
     const favs = getFavorites();
