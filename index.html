@@ -691,9 +691,9 @@
     <main class="grid main-grid" id="grid-new"></main>
 
     <div class="mini-divider">
-      <span>💫 기존 동화들</span>
+      <span>👩‍⚕️ 오은영 시리즈</span>
     </div>
-    <main class="grid main-grid" id="grid"></main>
+    <main class="grid main-grid" id="grid-onyoung"></main>
 
     <div class="empty" id="empty">
       <span class="face">🔍</span>
@@ -737,37 +737,28 @@
 
 <script>
   const tales = [
-    { title: '인어공주',        id: 'h3xiBmUmkcQ' },
-    { title: '백설공주',        id: 'PPmN-kZioNA' },
-    { title: '잠자는 숲 속의 공주', id: 'wK9g_KSzQmk' },
-    { title: '라푼젤',          id: '047kwHXx2bc' },
-    { title: '엄지공주',        id: 'M08wE7PebqE' },
-    { title: '신데렐라',        id: 'Dmk8d4D4fes' },
-    { title: '아기돼지 삼형제',  id: '1Ns6TTTrIXk' },
-    { title: '개구리 왕자',     id: 'r2KgFrCsN7E' },
-    { title: '미녀와 야수',     id: 'GB-hp7skvHU' },
-    { title: '프린세스 동요 모음', id: 'dgGXIp21-Ts' },
-    { title: '프린세스 동화 모음집', id: 'xrrKSE2CtR0' },
-    { title: '주니토니 hello', id: 'eib66oZOILo' },
-    { title: '주니토니 good-bye', id: 'kBSrSwlMAqE' },
-    { title: '피노키오', id: 'D7yF5qTqj0k', group: 'new' },
-    { title: '잭과 콩나무', id: 'Mzg_bqQqiP4', group: 'new' },
-    { title: '알라딘과 요술램프', id: 'EBEg2D-6B_M', group: 'new' },
-    { title: '토끼와 거북이', id: '-uSiQWzRoUI', group: 'new' },
-    { title: '이상한 나라의 앨리스', id: 'brgj06CIbJw', group: 'new' },
-    { title: '오즈의 마법사', id: '3b88Xv7RVUk', group: 'new' },
     { title: '구름빵 동화', id: '3gWh4gaezgs', group: 'new' },
     { title: '구름빵 노래', id: 'lzvgbmzPqeE', group: 'new' },
-    { title: '예쁜 동요 60분', id: 'T9yBEq9P6rQ', group: 'new' },
-    { title: '나무꾼 외 40분', id: 'IeelqDZb6jg', group: 'new' },
-    { title: '알라딘 외 40분', id: '31G_gz0EDCU', group: 'new' },
-    { title: '어린이동요 30분', id: 'EQejXNZboMc', group: 'new' },
-    { title: '핑크퐁 명작동화 모음', id: 'kjrhzyTeKsY', group: 'new' },
-    { title: '사자와 생쥐', id: 'ImlUQhFlJQ8', group: 'new' },
-    { title: '라푼젤 2', id: 'zBcUZnJQ4Jo', group: 'new' },
-    { title: '토끼와 자라', id: 'eSJh9IYuLFs', group: 'new' },
-    { title: '여우와 두루미', id: 'q7z6e2hNVG8', group: 'new' },
-    { title: '성냥팔이 소녀', id: '_uwCEAWx3bI', group: 'new' },
+    { title: '양치기 소녀', id: 'vErVzkOcmhs', group: 'new' },
+    { title: '헨젤과 그레텔', id: 'KEV2SoeD4JU', group: 'new' },
+    { title: '호랑이 동화', id: 'NHutfXQDnTE', group: 'new' },
+    { title: '견우와 직녀', id: 'c5AZXAYH77w', group: 'new' },
+    { title: '공주 이야기 1', id: 'mlKRAPp4Wog', group: 'new' },
+    { title: '나무꾼', id: 'IeelqDZb6jg', group: 'new' },
+    { title: '공주 이야기 2', id: 'o1j0ymSLgeE', group: 'new' },
+    { title: '눈의 여왕', id: 'fyJlUxjZs8k', group: 'new' },
+    // 오은영 시리즈
+    { title: '눈의 여왕', id: 'OIALucpww-8', group: 'onyoung' },
+    { title: '신데렐라', id: 'OqOnzDjpwYs', group: 'onyoung' },
+    { title: '오로라', id: 'Jh7Lg7zdVOw', group: 'onyoung' },
+    { title: '백설공주', id: 'Kmiq0euM8ZE', group: 'onyoung' },
+    { title: '잭과 콩나무', id: 'Xtos431Pd_g', group: 'onyoung' },
+    { title: '피노키오', id: '1E63OeLaD-k', group: 'onyoung' },
+    { title: '앨리스', id: 'HgIs0gm5WwE', group: 'onyoung' },
+    { title: '장화 신은 고양이', id: 'pn2M-14tP0I', group: 'onyoung' },
+    { title: '엄마 찾아 삼만리', id: 'LH5S9sq3MFA', group: 'onyoung' },
+    { title: '파랑새', id: '0ho7VTE99gs', group: 'onyoung' },
+    { title: '걸리버 여행기', id: 'zEVBVeEQuZM', group: 'onyoung' },
   ];
 
   /* ---------- localStorage helpers ---------- */
@@ -867,11 +858,11 @@
   }
 
   // Split into two groups for visual separation
-  const classicTales = tales.filter(t => t.group !== 'new');
   const newTales = tales.filter(t => t.group === 'new');
+  const onyoungTales = tales.filter(t => t.group === 'onyoung');
 
-  document.getElementById('grid').innerHTML = classicTales.map((t, i) => renderCard(t, i)).join('');
-  document.getElementById('grid-new').innerHTML = newTales.map((t, i) => renderCard(t, classicTales.length + i)).join('');
+  document.getElementById('grid-new').innerHTML = newTales.map((t, i) => renderCard(t, i)).join('');
+  document.getElementById('grid-onyoung').innerHTML = onyoungTales.map((t, i) => renderCard(t, newTales.length + i)).join('');
 
   /* ---------- YouTube-only section (clicking opens YouTube) ---------- */
   /* ---------- Sort & display state ---------- */
